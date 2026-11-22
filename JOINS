@@ -1,0 +1,180 @@
+/*
+What are joins? joins are used to combine the columns of two tables together, before we can be able to join 
+
+When do we use joins? we use joins to:
+1. Combine Data in order to get a big picture 
+2. Data Enrichment: getting extra data
+3. Check for existance of data by filtering
+
+TYPES OF JOINS
+1. Inner Join
+2. Left Join
+3. Right join
+4. Full Join
+5. Left Anti Join
+6. Right Anti Join
+7. Full Anti Join
+
+Joining tables can be broadly categorized in to 3.
+* joining matching data
+* Joining all the data
+* Joining Unmatching data
+*/
+
+#INNER JOIN: Returns only the matching data from both tables
+
+#Question: Get all customers along with their orders but only for customers who have placed an order
+use MyDatabase;
+
+SELECT 	c.id,
+		c.first_name,
+        o.order_id,
+        o.sales
+FROM customers c
+INNER JOIN orders o
+ON c.id = o.customer_id;
+
+# LEFT JOIN: Returns all the row from the left table and only the matching results from the right table. the order of the table is very importatnt 
+#Question: get all customers along with their orders including the ones without orders.
+
+	SELECT	c.id,
+			c.first_name,
+			o.order_id,
+			o.sales
+    FROM customers c
+    LEFT JOIN orders o
+    ON c.id = o.customer_id ;
+    
+    # RIGHT JOIN: Returns all the rows from the right table and only the matching results from the left table. The order of the table is very important.
+    # Get all orders along with their customers including orders without matching customers.
+    
+    SELECT	c.id,
+			c.first_name,
+			o.order_id,
+			o.sales
+    FROM customers c
+    Right JOIN orders o
+    ON c.id = o.customer_id ;
+    
+    # FULL JOIN: Returns All the rows and columns in the both tables, the order of the tables does not matter
+    
+    SELECT	c.id,
+			c.first_name,
+			o.order_id,
+			o.sales
+    FROM customers c
+	LEFT JOIN orders o
+    ON c.id = o.customer_id
+    
+    UNION 
+    
+    SELECT	c.id,
+			c.first_name,
+			o.order_id,
+			o.sales
+    FROM customers c
+	RIGHT JOIN orders o
+    ON c.id = o.customer_id;
+    
+    # LEFT ANTI JOIN: Returns only the values on the left table and excludes all unmatching data from the right table. The right table is only there for comparison purpose.
+    # Get all customers who have not placed orders
+    
+    SELECT	c.id,
+			c.first_name,
+			o.order_id,
+			o.sales
+    FROM customers c
+    LEFT JOIN orders o
+    ON c.id = o.customer_id
+    WHERE o.customer_id is null;
+    
+# RIGHT ANTI JOIN: Returns only the values on the right table and excludes all unmatching data from the left table. The left table is only there for comparison purpose.
+#QUESTION: Get all orders without customer
+
+	SELECT	c.id,
+			c.first_name,
+			o.order_id,
+			o.sales
+    FROM customers c
+    Right JOIN orders o
+    ON c.id = o.customer_id
+    WHERE c.id is null;
+    
+# FULL ANTI JOIN: Returns only the unmatching data in either of the two tables. The order of the table arrangement in our syntax does not matter.alter
+# QUESTION: get all customers without orders and all orders without customer.alter
+
+	SELECT	c.id,
+			c.first_name,
+			o.order_id,
+			o.sales
+    FROM customers c
+	LEFT JOIN orders o
+    ON c.id = o.customer_id
+    
+    UNION
+    
+    SELECT	c.id,
+			c.first_name,
+			o.order_id,
+			o.sales
+    FROM customers c
+	RIGHT JOIN orders o
+    ON c.id = o.customer_id
+    WHERE c.id is null or o.customer_id is null;
+    
+# QUESTION: Get all customers along with their order but only customers that placed order (without inner join)
+
+SELECT 		c.id,
+			c.first_name,
+			o.order_id,
+			o.sales
+FROM customers c
+LEFT JOIN orders o
+ON c.id = o.customer_id 
+WHERE o.customer_id  is not null;
+
+# QUESTION: Get all orders along with their customers but only orders with customers (without inner join)
+
+SELECT 		c.id,
+			c.first_name,
+			o.order_id,
+			o.sales
+FROM customers c
+RIGHT JOIN orders o
+ON c.id = o.customer_id 
+WHERE c.id  is not null;
+
+# JOINING MULTIPLE TABLES 
+# QUESTION: Using salesdb, retrieve a list of all orders along with the related customers, product and employee details.
+
+USE salesdb;
+SELECT * 
+FROM orders;
+
+SELECT *
+FROM customers;
+
+SELECT *
+FROM products;
+
+SELECT *
+FROM employees;
+
+SELECT o.orderid,
+		c.firstname customer_firstname,
+        c.lastname customer_lastname,
+        p.product,
+        o.sales,
+        p.price,
+        e.firstname employee_firstname,
+        e.lastname employee_lastname
+FROM orders o 
+LEFT JOIN customers c 
+ON o.customerid = c.customerid
+LEFT JOIN products p 
+ON p.productid = o.productid
+LEFT JOIN employees e 
+ON e.employeeid = o.salespersonid
+
+order by c.firstname,
+        c.lastname ;
